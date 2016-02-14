@@ -1,0 +1,162 @@
+<html>
+<head>
+<title>Cap XML Documentation</title>
+</head>
+<body background="../media/background.gif">
+<h1 align="center">Cap XML Documentation</h1>
+<table align="center" width="98%" bgcolor="#FFFFFF" cellpadding=4>
+<tr><td>
+<big><b>Table of Contents</b></big>
+<ol>
+<li><b><a href="#introduction">Introduction</a></b>
+<li><b><a href="#tags">Tags</a></b>
+<ul>
+	<li><a href="#sphere">sphere</a>
+	<ul>
+	<li><a href="#cap">cap</a>
+		<ul>
+		<li><a href="#link">link</a>
+			<ul>
+			<li><a href="#type">type</a>
+			<li><a href="#destination">destination</a>
+			<li><a href="#my_idx">my_idx</a>
+			<li><a href="#dest_idx">dest_idx</a>
+			</ul>
+		</ul>
+	</ul>
+</ul>
+<!--
+<li><b><a href="#examples">Examples</a></b>
+<ul>
+	<li><a href="#ex1">one</a>
+	<li><a href="#ex2">two</a>
+</ul>
+-->
+</ol><br>
+<a name="introduction">
+<h2>Introduction</h2>
+<hr>
+<p>XML is an acronym for Extensible Markup Language.  It is not so much a languge itself as a standard for creating markup languages.  This page documents the XML derived markup language used by the cap generator to specify how caps should be linked together.</p>
+<p>XML consists of tags, which are simply words enclosed in angle brackets that describe data. In XML, every tag has a corresponding closing tag.  The basic format of a tag is as follows:<br>
+<table width="98%" align="center" bgcolor="#EEEEEE">
+<tr><td>
+<pre><tt>&lt;tagname parameter1='value1' parameter2="value2"&gt;
+    misc. data goes here
+&lt;/tagname&gt;</tt></pre>
+</td></tr>
+</table>
+Note that values for parameters must be enclosed in quotation marks, but either single or double quotes work fine.
+</p><br>
+<a name="tags">
+<h2>Tags</h2>
+<hr>
+<a name="sphere">
+<b>sphere</b><br>
+<p>
+The <tt>sphere</tt> tag encloses all the other tags.  It has ony a single optional parameter, <tt>minlength</tt>.  <tt>minlength</tt> defines the side length of the caps to be used in the sphere.  For example, <a href="generate.php?cap%5B1%5D=1&minLength=1&type=edge&builder=Create+Sphere" target="_blank">cap #1</a> has a side length of 1, but if <tt>minlength</tt> is set to 2, additional points will be placed around the cap to <a href="generate.php?cap%5B1%5D=1&minLength=2&type=edge&builder=Create+Sphere" target="_blank">increase its side length</a>.  If minlength is set to a value equal to or less than the side lenth of the largest selected cap, it will be ignored.
+</p>
+<p>
+Example:
+<table width="98%" align="center" bgcolor="#EEEEEE">
+<tr><td>
+<pre><tt>&lt;sphere minlength='2'&gt;
+&lt;/sphere&gt;</tt></pre>
+</td></tr>
+</table>
+</p>
+<br>
+<a name="cap">
+<b>cap</b><br>
+<p>
+The <tt>cap</tt> tag is a child of the <tt>sphere</tt> tag.  It is used to specify, in order, which caps are to be included in the sphere.  The first parameter, <tt>type</tt> is used to specify what kind of cap to use.  This is an integer representing the unique database id number of the desired cap.
+</p>
+<p>
+The second parameter, <tt>label</tt>, is optional.  Each cap in the sphere has a unique label which can be set here, but if one is not chosen then label will default to an integer representing the cap's position in the list of caps, starting with 0.
+</p>
+<p>
+Example:
+<table width="98%" align="center" bgcolor="#EEEEEE">
+<tr><td>
+<pre><tt>&lt;sphere&gt;
+    &lt;cap type='1' label='alpha'&gt;
+    &lt;/cap&gt;
+&lt;/sphere&gt;</tt></pre>
+</td></tr>
+</table>
+</p><br>
+<a name="link">
+<b>link</b><br>
+<p>
+The <tt>link</tt> tag is a child of the <tt>cap</tt> tag.  It is used to specify which cap to link to and how.  It has no parameters of its own, instead all of the properties of a link are specified by <tt>link</tt>'s child tags: <a href="#type">type</a>, <a href="#type">destination</a>, <a href="#type">my_idx</a>, and <a href="#type">dest_idx</a>.  All of these tags are optional and will default to random if not used.
+</p><br>
+<a name="type">
+<b>type</b><br>
+<p>
+The <tt>type</tt> tag is a child of the <tt>link</tt> tag.  The information enclosed by a <tt>link</tt> tag describes how this cap should be linked to its destination cap.  There are three allowed types: edge, corner, random, and genetic.  An <a href="generate.php?cap%5B1%5D=2&minLength=2&type=edge&builder=Create+Sphere" target="_blank">edge join</a> lines up two caps so they share a common edge.  A <a href="generate.php?cap%5B1%5D=2&minLength=2&type=corner&builder=Create+Sphere" target="_blank">corner join</a> lines up two caps so they share a common corner, and iterpolates points to seal the gap between the caps.  A random join will randomly select between an edge and corner join.  The genetic option is similar to the random join except it cycles through a large number of random configurations in an attempt to find the one with the lowest energy.  This takes much longer to run than the other options.
+</p>
+<p>
+Example:
+<table width="98%" align="center" bgcolor="#EEEEEE">
+<tr><td>
+<pre><tt>&lt;sphere&gt;
+&lt;cap type='1' label='alpha'&gt;
+&lt;/cap&gt;
+&lt;cap type='1' label='beta'&gt;
+    &lt;link&gt;
+	    &lt;type&gt;edge&lt;/type&gt;
+    &lt;/link&gt;
+&lt;/cap&gt;
+&lt;/sphere&gt;</tt></pre>
+</td></tr>
+</table>
+</p><br>
+<a name="destination">
+<b>destination</b><br>
+<p>
+The <tt>destination</tt> tag is a child of the <tt>link</tt> tag.  It encloses the label of a cap to link this cap to.  The destination cap must be listed above the cap that is linking to it.  A destination of random will randomly select a destination.  If <tt>type</tt> is not set, <tt>destination</tt> will be ignored and will default to random.
+</p>
+<p>
+Example:
+<table width="98%" align="center" bgcolor="#EEEEEE">
+<tr><td>
+<pre><tt>&lt;sphere&gt;
+&lt;cap type='1' label='alpha'&gt;
+&lt;/cap&gt;
+&lt;cap type='1' label='beta'&gt;
+    &lt;link&gt;
+	    &lt;type&gt;edge&lt;/type&gt;
+	    &lt;destination&gt;alpha&lt;/destination&gt;
+    &lt;/link&gt;
+&lt;/cap&gt;
+&lt;/sphere&gt;</tt></pre>
+</td></tr>
+</table>
+</p><br>
+<a name="my_idx">
+<a name="dest_idx">
+<b>my_idx</b> and <b>dest_idx</b><br>
+<p>
+The <tt>my_idx</tt> and <tt>dest_idx</tt> tags are childred of the <tt>link</tt> tag.  Every edge or corner has a unique index value.  The index values range from 0 to number of edges - 1.  These tags allow the user to specify the specific pair of corners or edges to join on the current and destination caps.  An index of random will cause an index to be randomly selected.  If either <tt>type</tt> or <tt>destination</tt> is not set, <tt>my_idx</tt> and <tt>dest_idx</tt> will be ignored and will default to random.
+</p>
+<p>
+Example:
+<table width="98%" align="center" bgcolor="#EEEEEE">
+<tr><td>
+<pre><tt>&lt;sphere&gt;
+&lt;cap type='1' label='alpha'&gt;
+&lt;/cap&gt;
+&lt;cap type='1' label='beta'&gt;
+    &lt;link&gt;
+	    &lt;type&gt;edge&lt;/type&gt;
+	    &lt;destination&gt;alpha&lt;/destination&gt;
+	    &lt;my_idx&gt;1&lt;/my_idx&gt;
+	    &lt;dest_idx&gt;0&lt;/dest_idx&gt;
+    &lt;/link&gt;
+&lt;/cap&gt;
+&lt;/sphere&gt;</tt></pre>
+</td></tr>
+</table>
+</p><br>
+</td></tr>
+</body>
+</html>
